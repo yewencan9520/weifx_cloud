@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.abc.platform.dao.OrderDao">
+
+    <select id="findAllOrder" resultType="com.abc.platform.bean.WxbOrder">
+        SELECT oid,p2.goods_name as goodsName,p3.sku_name as skuName,p4.customer_name as customerName,p1.province,p1.city,
+            p1.area,p1.address,p1.buyer_name as buyerName,p1.pay_type as payType,p1.buyer_phone as buyerPhone,p1.order_time as orderTime,
+            p1.state,p1.buy_num as buyNum,p1.order_type as orderType
+            FROM wxb_order AS p1 JOIN wxb_goods AS p2 JOIN wxb_good_sku2 AS p3 JOIN wxb_customer AS p4
+            ON p1.good_id=p2.goods_id
+            AND p1.sku_id=p3.sku_id
+            AND p1.user_id=p4.customer_id
+    </select>
+
+</mapper>

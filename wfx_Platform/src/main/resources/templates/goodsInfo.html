@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<!-- saved from url=(0037)http://localhost:8081/cust/goods/list -->
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <base th:href="${#request.getContextPath()}+'/'">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link href="css/default.css" id="lhgdialoglink" rel="stylesheet">
+    <script src="js/jquery-3.1.1.js"></script>
+    <title>商品信息管理</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+</head>
+<body>
+<div class="sidebar-collapse" id="sidebar-collapse">
+    <i class="icon-double-angle-left" data-icon1="icon-double-angle-left" data-icon2="icon-double-angle-right"></i>
+</div>
+<script type="text/javascript">
+    try {
+        ace.settings.check('sidebar', 'collapsed')
+    } catch (e) {
+    }
+</script>
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try {
+                ace.settings.check('breadcrumbs', 'fixed')
+            } catch (e) {
+            }
+        </script>
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="page/index">首页</a>
+            </li>
+            <li>
+                <a href="page/goodsInfo">商品信息管理</a>
+            </li>
+        </ul>
+    </div>
+    <div class="page-content">
+        <div class="page-header">
+            <button class="btn btn-sm btn-success" onclick="add()">
+                <i class="icon-save bigger-110"></i>添加
+            </button>
+            <button class="btn btn-sm btn-success" onclick="updata()">
+                <i class="icon-save bigger-110"></i>修改
+            </button>
+            <button class="btn btn-sm btn-success" onclick="delete0()">
+                <i class="icon-save bigger-110"></i>删除
+            </button>
+            <button class="btn btn-sm btn-success" onclick="audit('tops')">
+                <i class="icon-save bigger-110"></i>置顶
+            </button>
+            <button class="btn btn-sm btn-success" onclick="audit('untops')">
+                <i class="icon-save bigger-110"></i>取消置顶
+            </button>
+            <button class="btn btn-sm btn-success" onclick="audit('recomed')">
+                <i class="icon-save bigger-110"></i>推荐
+            </button>
+            <button class="btn btn-sm btn-success" onclick="audit('unrecomed')">
+                <i class="icon-save bigger-110"></i>取消推荐
+            </button>
+            <button class="btn btn-sm btn-success" onclick="audit('states')">
+                <i class="icon-save bigger-110"></i>上架
+            </button>
+            <button class="btn btn-sm btn-success" onclick="audit('unstates')">
+                <i class="icon-save bigger-110"></i>下架
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover" id="sample-table-1">
+                                <thead>
+                                <tr>
+                                    <td width="3%" align="center" ztype="selector" field="id">
+                                        <input type="checkbox" value="*" id="dg1_AllCheck"
+                                               onclick="DataGrid.onAllCheckClick('dg1')">
+                                    </td>
+                                    <th class="center">序号</th>
+                                    <th class="left">商品名称</th>
+                                    <th class="center">商品图片</th>
+                                    <th class="center">商户名称</th>
+                                    <th class="center">是否置顶</th>
+                                    <th class="center">是否推荐</th>
+                                    <th class="center">价格</th>
+                                    <th class="center">状态</th>
+                                    <th class="left">排序</th>
+                                </tr>
+                                <tr th:each="pages,item:${page}">
+                                    <td><input type="checkbox" name="dg1_RowCheck2" id="dg1_RowCheck1" th:value="${pages['goodsId']}"></td>
+                                    <!--序号-->
+                                    <td align="center" th:text="${item.count}">序号</td>
+                                    <!--商品名称-->
+                                    <td align="center"><a href="" onclick="" th:text="${pages['goodsName']}">商品名称</a></td>
+                                    <!--商品图片-->
+                                    <td align="center" height="100px"><img th:src="${pages['goodsPic1']}" style="width:150px;height:100px;"></td>
+                                    <!--商户名称-->
+                                    <td align="center" th:text="${pages['customerId']}">商户名称</td>
+                                    <!--是否置顶-->
+                                    <td align="center">
+                                        <span class="label label-sm label-primary" th:if="${pages['toped']}=='1'">置顶</span>
+                                        <span class="label label-sm label-primary" th:if="${pages['toped']}=='0'">未置顶</span>
+                                    </td>
+                                    <!--是否推荐-->
+                                    <td align="center">
+                                        <span class="label label-sm label-success" th:if="${pages['recomed']}=='1'">已推荐</span>
+                                        <span class="label label-sm label-success" th:if="${pages['recomed']}=='0'">未推荐</span>
+                                    </td>
+                                    <!--商品价格-->
+                                    <td align="center"></td>
+                                    <!--状态-->
+                                    <td align="center">
+                                        <font color="#228b22" th:if="${pages['state']}=='1'">已上架</font>
+                                        <font color="red" th:if="${pages['state']}=='2'">已下架</font>
+                                    </td>
+                                    <!--排序-->
+                                    <td align="center" th:text="${pages['orderNo']}">排序</td>
+                                </tr>
+                                </thead>
+                            </table>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="sender" id="sample-table-2_info">
+                                        共 4 条记录，每页 3 条，共 2 页
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="dataTables_paginate paging_bootstrap sender">
+                                        <ul class="pagination">
+                                            <li>
+                                                <a class="active" onclick="page1()">1</a>
+                                                <a class="active" onclick="page2()">2</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/typeahead-bs2.min.js"></script>
+<!--<script src="js/excanvas.min.js"></script>-->
+<script src="js/jquery-ui-1.10.3.custom.min.js"></script>
+<script src="js/jquery.ui.touch-punch.min.js"></script>
+<script src="js/bootbox.min.js"></script>
+<script src="js/jquery.gritter.min.js"></script>
+<script src="js/ace-elements.min.js"></script>
+<script src="js/ace.min.js"></script>
+<!--<script src="good_info/WdatePicker.js" type="text/javascript"></script>-->
+<script src="js/lhgdialog.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    jQuery(function ($) {
+        $('table th input:checkbox').on('click', function () {
+            var that = this;
+            $(this).closest('table').find('tr > td:first-child input:checkbox')
+                .each(function () {
+                    if (!this.disabled) {
+                        this.checked = that.checked;
+                        $(this).closest('tr').toggleClass('selected');
+                    }
+                });
+        });
+    })
+</script>
+
+<script type="text/javascript">
+    (function (config) {
+        config['extendDrag'] = true; // 注意，此配置参数只能在这里使用全局配置，在调用窗口的传参数使用无效
+        config['lock'] = true;
+        config['fixed'] = true;
+        config['okVal'] = '确定';
+        config['cancelVal'] = '取消';
+    })($.dialog.setting);
+
+    // 如果只设置一个或少量全局配置也可这样：
+    $.dialog.setting.extendDrag = true;
+</script>
+<!-- menu over-->
+<script type="text/javascript">
+    function trashGood(id, state) {
+        if (id == null || id == '') {
+            $.dialog.alert("请先选择要删除的数据！");
+            return;
+        }
+        if (state != '0') {//只有为审核的商品可以上传
+            $.dialog.alert("对不起，只有未审核的商品可以删除！");
+            return;
+        }
+        $.dialog.confirm('<font color=red>你确定要删除商品数据吗？</font>', function () {
+            $.dialog.tips('数据处理中...', 600);//'loading.gif'
+            var param = "good_id=" + id + "&now=" + new Date().getTime();
+            jQuery.ajax({
+                type: "post",
+                cache: false,
+                url: "/cust/goods/trash",
+                data: param,
+                success: function (result) {
+                    if (result == 'true') {
+                        setTimeout('reloadPage();', 500);
+                    }
+                    if (result == 'false') {
+                        $.dialog.alert("对不起，删除商品信息失败！");
+                    }
+                }
+            });
+        });
+    }
+</script>
+<!--审核方法-->
+<script>
+    function audit(url) {
+        var goodsId;
+        $("input[name='dg1_RowCheck2']").each(function () {
+            if($(this).is(":checked")){
+                goodsId=$(this).val();
+                return;
+            }
+        });
+        $.ajax({
+            url:url+"?goodsId="+goodsId,
+            method:"get",
+            success:function (data) {
+                alert(data.obj),
+                $("#content").load("gInfo");
+            }
+        });
+
+    }
+    function page1() {
+        $("#content").load("gInfo?currentPage=0");
+    }
+    function page2() {
+        $("#content").load("gInfo?currentPage=1");
+    }
+</script>
+
+</div>
+</div>
+<div id="ldg_dragmask"
+     style="display: none; position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; cursor: move; opacity: 0; background: rgb(255, 255, 255); pointer-events: none;">
+</div>
+<div>
+    <div id="maskLevel" style="position:absolute;top:0;left:0;display:none;text-align:center;z-index:10000;"></div>
+    <div id="ym-window" style="position:absolute;z-index:10001;display:none">
+        <div class="ym-tl" id="ym-tl">
+            <div class="ym-tr">
+                <div class="ym-tc" style="cursor:move;">
+                    <div class="ym-header-text"></div>
+                    <div class="ym-header-tools"></div>
+                </div>
+            </div>
+        </div>
+        <div class="ym-ml" id="ym-ml">
+            <div class="ym-mr">
+                <div class="ym-mc">
+                    <div class="ym-body"></div>
+                </div>
+            </div>
+        </div>
+        <div class="ym-ml" id="ym-btnl">
+            <div class="ym-mr">
+                <div class="ym-btn"></div>
+            </div>
+        </div>
+        <div class="ym-bl" id="ym-bl">
+            <div class="ym-br">
+                <div class="ym-bc"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

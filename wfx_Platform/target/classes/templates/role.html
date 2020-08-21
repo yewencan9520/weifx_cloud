@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <base th:href="${#request.getContextPath()}+'/'">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- 树组件start -->
+    <script type="text/javascript" src="js/jquery-3.1.1.js"></script>
+    <link rel="stylesheet" href="css/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="js/jquery.ztree.core-3.5.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/public.css">
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-treeview.js"></script>
+    <!-- 系统共用js文件 -->
+    <link rel="stylesheet" type="text/css" href="css/ymPrompt.css">
+    <script type="text/javascript" src="js/ymPrompt.js"></script>
+    <script type="text/javascript" src="js/public.js"></script>
+    <script type="text/javascript" src="js/ServerClock.js"></script>
+    <script type="text/javascript" src="js/table.js"></script>
+    <script type="text/javascript" src="js/WdatePicker.js"></script>
+    <link href="css/WdatePicker.css" rel="stylesheet" type="text/css">
+    <script src="js/framework1.js"></script>
+    <title>角色信息管理</title>
+</head>
+
+<body onload="inits()">
+    <table width="100%" border="0" cellspacing="6" cellpadding="0"
+           style="border-collapse: separate; border-spacing: 6px;">
+        <tbody>
+        <tr valign="top">
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="6" class="blockTable">
+                    <tbody>
+                    <tr>
+                        <td valign="middle" class="blockTd">
+                            角色信息
+                            <input type="hidden" id="RelaCatalogID" name="RelaCatalogID" value="0">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0 8px 4px;">
+                            <a href="javascript:void(0);" ztype="zPushBtn" class="zPushBtn" hidefocus="true"
+                               tabindex="-1" onselectstart="return false" >
+                                <b>
+                                    <button onclick="add()" data-toggle="modal" data-target="#gridSystemModal">
+                                        新建</button>
+                                </b>
+                            </a>
+                            <a href="javascript:void(0);" ztype="zPushBtn" class="zPushBtn" hidefocus="true"
+                               tabindex="-1" onselectstart="return false">
+                                <b>
+                                    <button onclick="edit()" data-toggle="modal" data-target="#gridSystemModal">
+                                修改
+                            </button></b>
+                            </a>
+                            <a href="javascript:void(0);" ztype="zPushBtn" class="zPushBtn" hidefocus="true"
+                               tabindex="-1" onselectstart="return false" >
+                                <b>
+                                    <button onclick="setPermit()" data-toggle="modal" data-target="#gridSystemModal">
+                                授权
+                            </button></b>
+                            </a>
+                            <a href="javascript:void(0);" ztype="zPushBtn" class="zPushBtn" hidefocus="true"
+                               tabindex="-1" onselectstart="return false" >
+                                <b>
+                                    <button onclick="del()" data-toggle="modal" data-target="#gridSystemModal">
+                                删除
+                            </button></b>
+                            </a>
+                            关键词:
+                            <input name="searchText" type="text" id="searchText" onkeydown="enterSubmit();"
+                                   class="ipt_style" value="">
+                            <input type="button" name="sb" id="sb" class="btn_style" value="查询"
+                                   onclick="return search();">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top: 0px; padding-left: 6px; padding-right: 6px; padding-bottom: 8px;">
+                            <table width="100%" cellpadding="2" cellspacing="0" class="dataTable" sortstring="" id="dg1"
+                                   page="true" size="0" method="com.zving.cms.dataservice.Vote.dg1DataBind"
+                                   multiselect="true" autofill="true" scroll="false" lazy="false" cachesize="0">
+                                <tbody>
+                                <tr ztype="head" class="dataTableHead">
+                                    <td width="3%" align="center" ztype="selector" field="id">
+                                        <input type="checkbox" value="*" id="dg1_AllCheck">
+                                    </td>
+                                    <td width="5%" align="center">序 号</td>
+                                    <td align="center" width="10%"><b>角色编号</b></td>
+                                    <td align="center" width="10%"><b>角色名称</b></td>
+                                    <td align="center" width="10%"><b>角色类型</b></td>
+                                    <td align="center" width="10%"><b>角色描述</b></td>
+                                    <td align="center" width="10%"><b>排序编号</b></td>
+                                </tr>
+
+                                <tr th:each="role,item:${roles}" height="35" id="57414897_tr" style="background:#f5f5f5">
+                                    <td align="center">
+                                        <input type="checkbox" name="dg1_RowCheck" id="dg1_RowCheck2" th:value="${role.getRoleCode()}">
+                                    </td>
+                                    <td align="center" th:text="${item.count}">2</td>
+                                    <td align="center" th:text="${role.getRoleDesc()}">userId</td>
+                                    <td align="center" th:text="${role.getInfoName()}">username</td>
+                                    <td align="center" th:text="${role.getRoleName()}">roleName</td>
+                                    <td align="center" th:text="${role.getRoleType()}">remark</td>
+                                    <td align="center" th:text="${role.getRoleOrder()}">1</td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="7" align="center" id="dg1_PageBar" class="pagebg">
+                                        <div style="float: left; font-family: Tahoma">
+                                            共 6 条记录，每页 6 条，共 1 页
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+<div>
+    <div id="maskLevel" style="position:absolute;top:0;left:0;display:none;text-align:center;z-index:10000;"></div>
+    <div id="ym-window" style="position:absolute;z-index:10001;display:none">
+        <div class="ym-tl" id="ym-tl">
+            <div class="ym-tr">
+                <div class="ym-tc" style="cursor:move;">
+                    <div class="ym-header-text"></div>
+                    <div class="ym-header-tools"></div>
+                </div>
+            </div>
+        </div>
+        <div class="ym-ml" id="ym-ml">
+            <div class="ym-mr">
+                <div class="ym-mc">
+                    <div class="ym-body"></div>
+                </div>
+            </div>
+        </div>
+        <div class="ym-ml" id="ym-btnl">
+            <div class="ym-mr">
+                <div class="ym-btn"></div>
+            </div>
+        </div>
+        <div class="ym-bl" id="ym-bl">
+            <div class="ym-br">
+                <div class="ym-bc"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!------------------------------>
+<div id="gridSystemModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">X</span></button>
+                <h4 class="modal-title" id="gridModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="modal-content">
+                        <div id="treeview-checkable" class="treeview"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!------------------------------>
+<script type="text/javascript">
+    function setPermit() {
+        var roleId;
+        $("input[name='dg1_RowCheck']").each(function () {
+            if($(this).is(":checked")){
+                roleId=$(this).val();
+                return;
+            }
+        });
+        var str="";
+        var unstr="";
+        $.ajax({
+            url: "RoleTree?roleId="+roleId,
+            method: "get",
+            success: function (data) {
+                var $checkableTree = $('#treeview-checkable').treeview({
+                    levels: 1,
+                    color: "#428bca",
+                    data: data,
+                    showIcon: false,
+                    showCheckbox: true,
+                    onNodeChecked: function (event, node) {
+                        $('#checkable-output').prepend('<p>' + node.text + ' was checked</p>');
+                        // var list = node.nodes;
+                        // if(list != null) {
+                        //     for (let i = 0; i < list.length; i++) {
+                        //         list[i].state.checked=true;
+                        //         str+=list[i].nodeId+",";
+                        //         $checkableTree.treeview('toggleNodeChecked', [ list[i].text, { silent: $('#chk-check-silent').is(':checked') }]);
+                        //     }
+                        // }
+                        // if(!unstr.includes(node.nodeId)) {
+                        //     str+=node.nodeId+",";
+                        // }
+                        // unstr=unstr.replace(node.nodeId+",","")
+                    },
+                    onNodeUnchecked: function (event, node) {
+                        $('#checkable-output').prepend('<p>' + node.text + ' was unchecked</p>');
+                    //     if (!str.includes(node.nodeId)){
+                    //         unstr+=node.nodeId+",";
+                    //     }
+                    //     str=str.replace(node.nodeId+",","")
+                    }
+                });
+                var findCheckableNodess = function() {
+                    return $checkableTree.treeview('search', [ $('#input-check-node').val(), { ignoreCase: false, exactMatch: false } ]);
+                };
+                var checkableNodes = findCheckableNodess();
+
+                // Check/uncheck/toggle nodes
+                $('#input-check-node').on('keyup', function (e) {
+                    checkableNodes = findCheckableNodess();
+                    $('.check-node').prop('disabled', !(checkableNodes.length >= 1));
+                });
+
+                $('#btn-check-node.check-node').on('click', function (e) {
+                    $checkableTree.treeview('checkNode', [ checkableNodes, { silent: $('#chk-check-silent').is(':checked') }]);
+                });
+
+                $('#btn-uncheck-node.check-node').on('click', function (e) {
+                    $checkableTree.treeview('uncheckNode', [ checkableNodes, { silent: $('#chk-check-silent').is(':checked') }]);
+                });
+
+                $('#btn-toggle-checked.check-node').on('click', function (e) {
+                    $checkableTree.treeview('toggleNodeChecked', [ checkableNodes, { silent: $('#chk-check-silent').is(':checked') }]);
+                });
+
+                // Check/uncheck all
+                $('#btn-check-all').on('click', function (e) {
+                    $checkableTree.treeview('checkAll', { silent: $('#chk-check-silent').is(':checked') });
+                });
+
+                $('#btn-uncheck-all').on('click', function (e) {
+                    $checkableTree.treeview('uncheckAll', { silent: $('#chk-check-silent').is(':checked') });
+                });
+            }
+        });
+    }
+</script>
+</body>
+</html>

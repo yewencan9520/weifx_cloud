@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.abc.platform.dao.TreeNodeDao">
+
+    <resultMap id="baseResult" type="com.abc.platform.bean.TreeNodeBean">
+        <result property="text" column="p_name"/>
+        <result property="href" column="p_url"/>
+        <collection property="nodes" column="c1_module" ofType="com.abc.platform.bean.TreeNodeBean">
+            <result property="text" column="c1_name"/>
+            <result property="href" column="c1_url"/>
+            <collection property="nodes" column="c2_module" ofType="com.abc.platform.bean.TreeNodeBean">
+                <result property="text" column="c2_name"/>
+                <result property="href" column="c2_url"/>
+                <collection property="nodes" column="c3_module" ofType="com.abc.platform.bean.TreeNodeBean">
+                    <result property="text" column="c3_name"/>
+                    <result property="href" column="c3_url"/>
+                </collection>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="findTreeNodeByUsername" resultMap="baseResult">
+        SELECT p_name,p_code,p_module,p_url,c1_name,c1_module,c1_code,c1_url,c2_module,c2_name,c2_url,c2_code,
+            c3.module_name AS c3_name ,
+            c3.module_code AS c3_code,
+            c3.link_url AS c3_url,
+            c3.parent_module AS c3_module
+            FROM sys_module AS c3
+        RIGHT JOIN(SELECT p.module_name AS p_name ,
+            p.module_code AS p_code ,
+            p.parent_module AS p_module ,
+            p.link_url AS p_url ,
+            c1.module_name AS c1_name ,
+            c1.parent_module AS c1_module,
+            c1.module_code AS c1_code,
+            c1.link_url AS c1_url,
+            c2.parent_module AS c2_module,
+            c2.module_name AS c2_name,
+            c2.module_code AS c2_code,
+            c2.link_url AS c2_url
+            FROM user_info AS u
+            JOIN sys_user_role AS ur
+            JOIN sys_role AS r
+            JOIN sys_role_fun AS f
+            JOIN sys_module AS p
+            JOIN sys_module AS c1
+            JOIN sys_module AS c2
+            ON p.module_code=c1.parent_module
+            AND c1.module_code=c2.parent_module
+            AND p.module_code='0101'
+            AND u.user_id=ur.user_id
+            AND ur.role_id=r.role_code
+            AND r.role_code=f.role_id
+            AND f.module_id=c2.module_code
+            AND u.`username`=#{username}) AS pp
+            ON c3.parent_module=pp.c2_code
+    </select>
+
+    <select id="findAllRole" resultMap="baseResult">
+        SELECT p_name,p_code,p_module,p_url,c1_name,c1_module,c1_code,c1_url,c2_module,c2_name,c2_url,c2_code,
+            c3.module_name AS c3_name ,
+            c3.module_code AS c3_code,
+            c3.link_url AS c3_url,
+            c3.parent_module AS c3_module
+            FROM sys_module AS c3
+        RIGHT JOIN(SELECT p.module_name AS p_name ,
+            p.module_code AS p_code ,
+            p.parent_module AS p_module ,
+            p.link_url AS p_url ,
+            c1.module_name AS c1_name ,
+            c1.parent_module AS c1_module,
+            c1.module_code AS c1_code,
+            c1.link_url AS c1_url,
+            c2.parent_module AS c2_module,
+            c2.module_name AS c2_name,
+            c2.module_code AS c2_code,
+            c2.link_url AS c2_url
+            FROM user_info AS u
+            JOIN sys_user_role AS ur
+            JOIN sys_role AS r
+            JOIN sys_role_fun AS f
+            JOIN sys_module AS p
+            JOIN sys_module AS c1
+            JOIN sys_module AS c2
+            ON p.module_code=c1.parent_module
+            AND c1.module_code=c2.parent_module
+            AND p.module_code='0101'
+            AND u.user_id=ur.user_id
+            AND ur.role_id=r.role_code
+            AND r.role_code=f.role_id
+            AND f.module_id=c2.module_code) AS pp
+            ON c3.parent_module=pp.c2_code
+    </select>
+
+    <select id="findRoleByUsername" resultType="java.lang.String">
+        SELECT m.module_name from sys_role r join sys_role_fun rf join sys_module m
+				on r.role_code=rf.role_id and rf.module_id=m.module_code
+				and r.role_code=#{RoleId};
+    </select>
+
+</mapper>

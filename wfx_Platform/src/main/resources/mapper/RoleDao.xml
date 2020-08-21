@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.abc.platform.dao.RoleDao">
+
+    <resultMap id="rm" type="com.abc.platform.bean.SysRole">
+        <result property="roleCode" column="role_code"></result>
+        <result property="roleName" column="role_name"></result>
+        <result property="roleOrder" column="role_order"></result>
+        <result property="roleDesc" column="roleDesc"></result>
+        <result property="roleOrder" column="roleOrder"></result>
+        <result property="roleType" column="roleType"></result>
+    </resultMap>
+
+    <select id="findRolePage" resultMap="rm">
+        SELECT
+            f.user_id as roleDesc,f.username as infoName,r.role_code,r.role_name,r.role_order,f.remark as roleType
+        FROM
+            user_info f
+        JOIN
+            sys_role r
+            ON
+            r.role_code=f.role_id
+    </select>
+
+</mapper>

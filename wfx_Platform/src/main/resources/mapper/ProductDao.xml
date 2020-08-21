@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.abc.platform.dao.ProductDao">
+
+    <!--新增商品信息-->
+    <insert id="insertAddProduct" useGeneratedKeys="true" keyColumn="goods_id" keyProperty="goodsId">
+        INSERT INTO wxb_goods(order_no,customer_id,goods_id,type_id,goods_name,goods_pic1,goods_pic2,goods_pic3,create_time)
+        VALUES (#{orderNo},#{customerId},#{goodsId},#{typeId},#{goodsName},#{goodsPic1},#{goodsPic2},#{goodsPic3},#{createTime})
+    </insert>
+
+    <!--新增套餐信息-->
+    <insert id="insertAddSku">
+        insert into wxb_good_sku2(sku_id,sku_name,sku_cost,sku_price,sku_pmoney,service_money,goods_id) values
+        <foreach collection="list" item="sku" separator=",">
+            (#{sku.skuId},#{sku.skuName},#{sku.skuCost},#{sku.skuPrice},#{sku.skuPmoney},#{sku.serviceMoney},#{goodsId})
+        </foreach>
+    </insert>
+
+    <resultMap id="baseResultMap" type="com.abc.platform.bean.WxbGoods">
+        <result property="goodsName" column="goodsName"></result>
+        <result property="goodsPic1" column="goodsPic1"></result>
+        <result property="skuPrice" column="skuPrice"></result>
+        <result property="orderNo" column="orderNo"></result>
+        <result property="state" column="state"></result>
+        <result property="toped" column="toped"></result>
+        <result property="recomed" column="recomed"></result>
+        <result property="customerId" column="customerName"></result><!--商户名-->
+    </resultMap>
+    <select id="findAllGoods" resultMap="baseResultMap">
+        SELECT
+        goods_name AS goodsName,
+	    wxb_customer.customer_name AS customerName,
+	    goods_pic1 AS goodsPic1,
+        wxb_goods.`goods_id` AS goodsId,
+        wxb_goods.`order_no` AS orderNo,
+        wxb_goods.`state` AS state,
+        wxb_goods.`recomed` AS recomed,
+        wxb_goods.`toped` AS toped
+        FROM wxb_goods
+        LEFT JOIN wxb_customer
+        ON wxb_goods.`customer_id`=wxb_customer.`customer_id`
+    </select>
+
+    <update id="updateSkuTopById">
+        update wxb_goods set toped=#{top} where goods_id=#{goodsId}
+    </update>
+
+    <update id="updateSkurecomedById">
+        update wxb_goods set recomed=#{recomed} where goods_id=#{goodsId}
+    </update>
+
+    <update id="updateSkustatesById">
+        update wxb_goods set state=#{state} where goods_id=#{goodsId}
+    </update>
+
+    <select id="findAllCustomer" resultType="com.abc.platform.bean.WxbCustomer">
+        SELECT customer_id AS customerId,state,login_name AS loginName,customer_name AS customerName,LEVEL,qq,phone,createtime FROM wxb_customer
+    </select>
+
+    <insert id="insertUser">
+        INSERT INTO wxb_customer(customer_id,customer_name,QQ,wxh,phone,createtime,login_name,login_pwd,state,level)
+        VALUES(#{customerId},#{customerName},#{qq},#{wxh},#{phone},#{createtime},#{loginName},#{loginPwd},#{state},#{level})
+    </insert>
+
+    <select id="findUserById" resultType="com.abc.platform.bean.WxbCustomer">
+        SELECT customer_id AS customerId,state,login_name AS loginName,customer_name AS customerName,LEVEL,wxh,qq,phone,createtime
+        FROM wxb_customer
+        WHERE customer_id=#{cId}
+    </select>
+
+    <update id="updateUser">
+        update wxb_customer set customer_name=#{customerName},QQ=#{qq},wxh=#{wxh},phone=#{phone},update_time=#{updateTime},
+        login_name=#{loginName},login_pwd=#{loginPwd},state=#{state},level=#{level}
+        where customer_id=#{customerId}
+    </update>
+
+    <delete id="deleteUser">
+        delete from wxb_customer where customer_id=#{customerId}
+    </delete>
+
+</mapper>

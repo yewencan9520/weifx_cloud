@@ -1,0 +1,452 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <base th:href="${#request.getContextPath()}+'/'">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- 树组件start -->
+    <script type="text/javascript" src="js/jquery-3.1.1.js"></script>
+    <link rel="stylesheet" href="css/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="js/jquery.ztree.core-3.5.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/public.css">
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-treeview.js"></script>
+    <!-- 系统共用js文件 -->
+    <link rel="stylesheet" type="text/css" href="css/ymPrompt.css">
+    <script type="text/javascript" src="js/ymPrompt.js"></script>
+    <script type="text/javascript" src="js/public.js"></script>
+    <script type="text/javascript" src="js/ServerClock.js"></script>
+    <script type="text/javascript" src="js/table.js"></script>
+    <script type="text/javascript" src="js/WdatePicker.js"></script>
+    <link href="css/WdatePicker(1).css" rel="stylesheet" type="text/css">
+    <script src="js/framework1.js"></script>
+    <title>订单信息管理</title>
+</head>
+<body>
+<div>
+    <table width="100%" border="0" cellspacing="6" cellpadding="0"
+           style="border-collapse: separate; border-spacing: 6px;">
+        <tr>
+            <td valign="middle" class="blockTd">
+                <h2>订单信息列表</h2>
+                <input type="hidden" id="RelaCatalogID" name="RelaCatalogID" value="0">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                订单号/推荐人/收货人/电话/快递单号:
+                <input type="hidden" name="state_id" id="state_id" value="">
+                <input type="hidden" name="user_id" id="user_id" value="">
+                <input name="searchText" type="text" id="searchText" onkeydown="enterSubmit();"
+                       class="ipt_style" value="">
+                日期:
+                <input type="text" id="start_date" name="start_date" class="Wdate"
+                       style="width:125px;height:25px;"
+                       onclick="WdatePicker({dateFmt:&#39;yyyy-MM-dd HH:mm&#39;})" value="">
+                ~
+                <input type="text" id="end_date" name="end_date" class="Wdate"
+                       style="width:125px;height:25px;"
+                       onclick="WdatePicker({dateFmt:&#39;yyyy-MM-dd HH:mm&#39;})" value="">
+                <input type="button" name="sb" id="sb" class="btn_style" value="查询"
+                       onclick="return search();">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr type="head">
+                        <td><input type="checkbox" width="3%"></td>
+                        <td align="center" width="3%"><b>ID</b></td>
+                        <td align="center" width="10%"><b>操 作</b></td>
+                        <td align="center" width="6%"><b>跟单员</b></td>
+                        <td align="center" width="13%"><b>商品信息</b></td>
+                        <td align="center" width="7%"><b>推荐人</b></td>
+                        <td align="center" width="20%"><b>收货信息</b></td>
+                        <td align="center" width="14%"><b>时间</b></td>
+                        <td align="center" width="6%"><b>类 型</b></td>
+                        <td align="center" width="5%"><b>状 态</b></td>
+                        <td align="center" width="6%"><b>付款方式</b></td>
+                        <td align="center" width="6%"><b>付款状态</b></td>
+                    </tr>
+                    <tr th:each="ord,item:${order}">
+                        <td><input type="checkbox" id="Check"></td>
+
+                        <td class="center" th:text="${ord['oid']}">ID</td>
+
+                        <td class="center">
+                            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                            </button>
+                            <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                            </button>
+                            <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                            </button>
+                        </td>
+
+                        <td class="left" th:text="${ord['customerName']}"></td>
+                        <td class="left">
+                            名称：<span th:text="${ord['goodsName']}"></span><br>
+                            套餐：<span th:text="${ord['skuName']}"></span><br>
+                            数量：<span color="red" th:text="${ord['buyNum']}"></span><br>
+                        </td>
+                        <td class="left" th:text="${ord['customerName']}">qq123456</td>
+                        <td class="left">
+                            姓名：<span th:text="${ord['buyerName']}"></span><br>
+                            电话：<span th:text="${ord['buyerPhone']}"></span><br>
+                            地址：<span th:text="${ord['province']}"></span>
+                            -<span th:text="${ord['city']}"></span>
+                            -<span th:text="${ord['area']}"></span>
+                            -<span th:text="${ord['address']}"></span>
+                        </td>
+                        <td class="left" th:text="${ord['orderTime']}">2016-05-21 02:16:42</td>
+                        <td class="left">
+                            <font color="#228b22" th:if="${ord['orderType']}==0">正常下单</font>
+                            <font color="#1e90ff" th:if="${ord['orderType']}==1">代客下单</font>
+                            <font color="red" th:if="${ord['orderType']}==2">异常订单</font>
+                        </td>
+                        <td class="left">
+                            <span th:if="${ord['state']}==1">待结算</span>
+                            <span th:if="${ord['state']}==2">已结算</span>
+                            <span th:if="${ord['state']}==3">待返款</span>
+                            <span th:if="${ord['state']}==4">已返款</span>
+                            <span th:if="${ord['state']}==5">退  款</span>
+                        </td>
+                        <td class="left">
+                            <font color="#1e90ff" th:if="${ord['payType']}==0">支付宝</font>
+                            <font color="#32cd32" th:if="${ord['payType']}==1">微信</font>
+                            <font color="orange" th:if="${ord['payType']}==2">银行卡</font>
+                        </td>
+                        <td class="center">
+                            <span class="label label-primary arrowed-in-right arrowed">未付款</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" align="center" id="dg1_PageBar" class="pagebg">
+                            <div style="float: right; font-family: Tahoma;" class="flickr">
+                            </div>
+                            <div style="float: left; font-family: Tahoma">
+                                共 0 条记录，每页 0 条，共 0 页
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+<div>
+    <div id="maskLevel" style="position:absolute;top:0;left:0;display:none;text-align:center;z-index:10000;"></div>
+    <div id="ym-window" style="position:absolute;z-index:10001;display:none">
+        <div class="ym-tl" id="ym-tl">
+            <div class="ym-tr">
+                <div class="ym-tc" style="cursor:move;">
+                    <div class="ym-header-text"></div>
+                    <div class="ym-header-tools"></div>
+                </div>
+            </div>
+        </div>
+        <div class="ym-ml" id="ym-ml">
+            <div class="ym-mr">
+                <div class="ym-mc">
+                    <div class="ym-body"></div>
+                </div>
+            </div>
+        </div>
+        <div class="ym-ml" id="ym-btnl">
+            <div class="ym-mr">
+                <div class="ym-btn"></div>
+            </div>
+        </div>
+        <div class="ym-bl" id="ym-bl">
+            <div class="ym-br">
+                <div class="ym-bc"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function seeOrder(id) {
+        window.location.href = "/wxb/order!showOrder.ct?order_id=" + id;
+    }
+
+    function expOrder() {
+        window.location.href = "/wxb/order!exportOrder.ct?tempid=2&state_id=2";
+    }
+
+    function expSelOrder() {
+        var arr = DataGrid.getSelectedValue("dg1");
+        if (arr == null || arr.length == 0) {
+            Exceptalert("请先选择要操作的订单！", null, true);
+            return;
+        }
+        var oid = Arr2String(arr);
+        window.location.href = "/wxb/order!exportOrder.ct?tempid=1&state_id=&order_id=" + oid;
+
+    }
+
+    function expCSelOrder() {
+        var arr = DataGrid.getSelectedValue("dg1");
+        if (arr == null || arr.length == 0) {
+            Exceptalert("请先选择要操作的订单！", null, true);
+            return;
+        }
+        var oid = Arr2String(arr);
+        window.location.href = "/wxb/order!exportOrder.ct?tempid=2&state_id=&order_id=" + oid;
+
+    }
+
+    function expOrderAll() {
+        window.location.href = "/wxb/order!exportOrder.ct?tempid=1&state_id=";
+    }
+
+    //条件导出
+    function goTJExport() {
+        var good_id = document.getElementById('good_id').value;
+        var cust_id = document.getElementById('customer_id').value;
+        if (cust_id == null || cust_id.length == 0) {
+            Exceptalert("请先选择所属商户！", null, true);
+            return;
+        }
+        window.location.href = "/wxb/order!exportOrder.ct?tempid=2&customer_id=" + cust_id + "&good_id=" + good_id + "&state_id=";
+    }
+
+    function signOrder() {
+        window.location.href = "/wxb/order!goSignOrder.ct?state_id=4";
+    }
+
+    function impOrder() {
+        window.location.href = "/wxb/order!goImportOrder.ct";
+    }
+
+    //编辑订单
+    function edit(oid, sid, op_id) {
+        var user_type = "3"
+        var user_id = "23946449"
+        /*if(user_type!="1"){
+            Exceptalert("只有客服账号才能操作订单！");
+            return;
+        }
+        if(op_id!="" && (user_id!=op_id)){
+            Exceptalert("对不起，订单已被接管，无限操作！");
+            return;
+        }
+       if(sid!=1){
+         Exceptalert("对不起，进入流程的订单不能修改！",null,true);
+         return;
+       }*/
+
+        window.location.href = "/wxb/order!goEditOrder.ct?order_id=" + oid;
+    }
+
+    function showSender(tp, id) {
+        var url = "order!showSenderInfo.ct?sender_type=" + tp + "&courier_id=" + id;
+        showWindow(url, null, 500, 350, "物流信息", loadNowPage, true);
+    }
+
+    function show100Sender(tp, id) {
+        var url = "http://m.kuaidi100.com/index_all.html?type=" + tp + "&postid=" + id;
+        showWindow(url, null, 500, 350, "物流信息", loadNowPage, true);
+    }
+
+    function delOrder(id, sid, op_id) {
+
+        var user_type = "3"
+        var user_id = "23946449"
+        /*if(user_type!="1"){
+            Exceptalert("只有客服账号才能操作订单！");
+            return;
+        }
+        if(op_id!="" && (user_id!=op_id)){
+            Exceptalert("对不起，订单已被接管，操作取消！");
+            return;
+        }*/
+
+        if (id == null || id == '') {
+            Exceptalert("请先选择要删除的数据！", null, true);
+            return;
+        }
+
+        if (sid != 1 && sid != 3) {
+            Exceptalert("对不起，订单进入审核流程不能删除！");
+            return;
+        }
+
+        var param = "order_id=" + id + "&optype=delete_order&now=" + new Date().getTime();
+        ExceptConfirm('<font color=red>确定要删除订单吗?</font>', true, function (tp) {
+            if (tp == "ok") {
+                loading(base_url);
+                jQuery.ajax({
+                    type: "POST",
+                    cache: false,
+                    url: "order!operOrderInfo.ct",
+                    data: param,
+                    success: function (result) {
+                        if (result == 'true') {
+                            Exceptalert("恭喜你，删除订单信息成功！", "success", false);
+                            setTimeout('reloadPage();', 500);
+                        }
+                        if (result == 'false') {
+                            Exceptalert("对不起，删除订单信息失败！", null, false);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function lock(id, op) {
+        var user_type = "3"
+        /*if(user_type!="1"){
+            Exceptalert("只有客服账号才能接管订单！");
+            return;
+        }
+        if(op!=null && op!=""){
+            Exceptalert("订单已接被【"+op+"】接管，请选择其他订单！");
+            return;
+        }*/
+
+        var param = "order_id=" + id + "&optype=edit_order&now=" + new Date().getTime();
+        ExceptConfirm('<font color=red>确定要接管订单吗?</font>', true, function (tp) {
+            if (tp == "ok") {
+                loading(base_url);
+                jQuery.ajax({
+                    type: "POST",
+                    cache: false,
+                    url: "order!lockOrder.ct",
+                    data: param,
+                    success: function (result) {
+                        if (result == 'true') {
+                            Exceptalert("订单接管成功！", "success", false);
+                            setTimeout('reloadPage();', 500);
+                        }
+                        if (result == 'false') {
+                            Exceptalert("对不起，订单接管失败！", null, false);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    //批量删除订单信息
+    function batchDel() {
+
+        var arr = DataGrid.getSelectedValue("dg1");
+        if (arr == null || arr.length == 0) {
+            Exceptalert("请先选择要操作的订单！", null, true);
+            return;
+        }
+        var oid = Arr2String(arr);
+
+        var param = "order_id=" + oid + "&optype=batch_delete&now=" + new Date().getTime();
+        ExceptConfirm('<font color=red>确定要批量删除订单吗?</font>', true, function (tp) {
+            if (tp == "ok") {
+                loading(base_url);
+                jQuery.ajax({
+                    type: "POST",
+                    cache: false,
+                    url: "order!operOrderInfo.ct",
+                    data: param,
+                    success: function (result) {
+                        if (result == 'true') {
+                            Exceptalert("恭喜，批量删除订单成功！", "success", false);
+                            setTimeout('reloadPage();', 500);
+                        }
+                        if (result == 'false') {
+                            Exceptalert("抱歉，批量删除订单失败！", null, false);
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
+    //分配客服信息
+    function distribOrder() {
+
+        var arr = DataGrid.getSelectedValue("dg1");
+        if (arr == null || arr.length == 0) {
+            Exceptalert("请先选择要操作的订单！", null, true);
+            return;
+        }
+
+        var oid = Arr2String(arr);
+        var operator = document.getElementById("operator").value;
+        if (operator == null || operator == '') {
+            Exceptalert("对不起，请选择跟单客服！", null, false);
+            return false;
+        }
+        //拼接参数
+        var param = "operator=" + operator +
+            "&order_id=" + oid +
+            "&optype=order_disb&now=" + new Date().getTime();
+
+        ExceptConfirm('<font color=red>确定要为订单分配客服吗?</font>', false, function (tp) {
+            if (tp == "ok") {
+                loading(base_url);
+                jQuery.ajax({
+                    type: "get",
+                    cache: false,
+                    url: "order!batchDistOrder.ct",
+                    data: param,
+                    success: function (result) {
+                        if (result == 'true') {
+                            Exceptalert("恭喜，订单分配客服成功！", "success", false);
+                            setTimeout('reloadPage();', 500);
+                        }
+                        if (result == 'false') {
+                            Exceptalert("抱歉，订单分配客服失败！", null, false);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function goBatchCheck() {
+        var arr = DataGrid.getSelectedValue("dg1");
+        if (arr == null || arr.length == 0) {
+            Exceptalert("请先选择要操作的订单！", null, true);
+            return;
+        }
+        var oid = Arr2String(arr);
+        var url = "order!initBatchCheck.ct?order_id=" + oid;
+        showWindow(url, null, 380, 230, "批量审核", loadNowPage, true);
+    }
+
+    function goBatchDisb() {
+        var arr = DataGrid.getSelectedValue("dg1");
+        if (arr == null || arr.length == 0) {
+            Exceptalert("请先选择要操作的订单！", null, true);
+            return;
+        }
+        var oid = Arr2String(arr);
+        var url = "order!initBatchDisb.ct?order_id=" + oid;
+        showWindow(url, null, 380, 230, "分配客服", loadNowPage, true);
+    }
+
+    function inits() {
+        var stx = document.formSelect.searchText;
+        if (stx) {
+            stx.select();
+        }
+    }
+
+    function enterSubmit() {
+        if (event.keyCode == 13) {
+            search();
+        }
+    }
+
+    function search() {
+        var searchText = document.getElementById("searchText").value;
+        document.formSelect.action = "order!getOrderList.ct?searchText=" + searchText;
+        document.formSelect.submit();
+    }
+</script>
+</body>
+</html>

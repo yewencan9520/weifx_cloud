@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.abc.platform.dao.ProductDao">
+
+    <!--新增商品信息-->
+    <insert id="insertAddProduct" useGeneratedKeys="true" keyColumn="goods_id" keyProperty="goodsId">
+        INSERT INTO wxb_goods(order_no,customer_id,goods_id,type_id,goods_name,goods_pic1,goods_pic2,goods_pic3,create_time)
+        VALUES (#{orderNo},#{customerId},#{goodsId},#{typeId},#{goodsName},#{goodsPic1},#{goodsPic2},#{goodsPic3},#{createTime})
+    </insert>
+
+    <!--新增套餐信息-->
+    <insert id="insertAddSku">
+        insert into wxb_good_sku2(sku_id,sku_name,sku_cost,sku_price,sku_pmoney,service_money,goods_id) values
+        <foreach collection="list" item="sku" separator=",">
+            (#{sku.skuId},#{sku.skuName},#{sku.skuCost},#{sku.skuPrice},#{sku.skuPmoney},#{sku.serviceMoney},#{goodsId})
+        </foreach>
+    </insert>
+
+</mapper>
